@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">我的应用</string>
+    <string name="back">返回上一级</string>
+    <string name="home">主页</string>
+    <string name="setting">设置</string>
+    <string name="localhost">https://tjc/</string>
+
+</resources>
