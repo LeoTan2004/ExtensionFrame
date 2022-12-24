@@ -1,7 +1,7 @@
 package com.example.myapplication.core;
 
+
 import android.util.Log;
-import android.view.View;
 import android.webkit.WebView;
 
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Boot {
 
     //getter&setter hasn't been built
-    private String homePage = "https://www.baidu.com";
+    private final String homePage = "https://www.baidu.com";
     private String setting = "https://www.bilibili.com/";
     static {
         Log.d("Boot", "static initializer: ");
@@ -105,4 +105,7 @@ public class Boot {
         return false;
 
     }
+
+
+
 }

@@ -1,5 +1,7 @@
 package com.example.myapplication.core;
 
+import android.os.Build;
+import android.os.Environment;
 import android.util.Log;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -36,6 +38,7 @@ public class MyWebViewClient extends WebViewClient {
                 s.printStackTrace();
             }
         }
+
         return super.shouldInterceptRequest(view, url);
     }
 }
