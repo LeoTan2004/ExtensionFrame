@@ -1,48 +1,47 @@
 package com.example.myapplication.core;
 
 
-import android.util.Log;
 import android.webkit.WebView;
+
+import androidx.annotation.NonNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class Boot {
 
     //getter&setter hasn't been built
+    private static Boot boot = null;
+//    private String localhost;
     private final String homePage = "https://www.baidu.com";
     private String setting = "https://www.bilibili.com/";
-    static {
-        Log.d("Boot", "static initializer: ");
+    //=======================================
+    //TODO 文件管理部分，可以考虑向上抽象
+    private FileMGRStore fileMGRStore;
+
+    public FileMGRStore getFileMGRStore() {
+        return fileMGRStore;
     }
 
-    public String getLocalhost() {
-        return localhost;
-    }
+    //=========================================
+    private ArrayList<JsExtension> jsExtensions = new ArrayList<>();
+    private WebView webView = null;
 
-    public void setLocalhost(String localhost) {
-        this.localhost = localhost;
-    }
-
-    private String localhost;
 
     public  void goBack(){
         this.webView.goBack();
     }
-
     public  void goHome(){
-        Log.d("37HHH", "goHome: "+homePage);
         this.webView.loadUrl(this.homePage);
     }
-
     public  void setting(){
-        this.webView.loadUrl(setting);
-    }
+//        this.webView.loadUrl(setting);
+//        TODO 暂时用来测试功能
+//        fileMGRStore.getPriFileMGR().getFile("main.js");
 
-    private static Boot boot = null;
-    private WebView webView = null;
-    private ArrayList<JsExtension> jsExtensions = new ArrayList<>();
+    }
 
     public static Boot getBoot() {
         if (boot==null){
@@ -59,7 +58,6 @@ public class Boot {
     public void refresh(String url){
         //TODO do something after loadUrl
         startExtension(url);//start the extension
-
     }
 
     public int startExtension(String url){
@@ -73,13 +71,17 @@ public class Boot {
         return counter;
     }
 
-    public WebView getWebView() {
+    public WebView getWebView() throws Exception {
+        if (this.webView == null) {
+            throw new Exception();
+        }
         return webView;
     }
 
-    public Boot(WebView view) {
+    public Boot(@NonNull WebView view) {
         this.webView = view;
         boot = this;
+        this.fileMGRStore = new FileMGRStore(view.getContext());
     }
 
     public static void startup(WebView view){
@@ -92,7 +94,7 @@ public class Boot {
 
     }
 
-    public boolean addExtension(String path)  {
+    public boolean addExtension(String path) throws Exception {
         try {
             JsExtension instance = JsExtension.getInstance(path);
             if (instance != null) {
@@ -101,6 +103,8 @@ public class Boot {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            throw e;
         }
         return false;
 

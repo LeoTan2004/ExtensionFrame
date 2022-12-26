@@ -54,7 +54,7 @@ public class JsExtension {
         this.name = name;
     }
 
-    public static JsExtension getInstance(String path) throws IOException {
+    public static JsExtension getInstance(String path) throws Exception {
         File file = new File(path);
         if (path == null) {
             return null;
@@ -85,7 +85,7 @@ public class JsExtension {
         return jsExtension;
     }
 
-    public int setJavascripts() throws IOException {
+    public int setJavascripts() throws Exception {
         int counter = 0;
         File[] js = this.directory.get("js").listFiles(new FileFilter() {
             @Override

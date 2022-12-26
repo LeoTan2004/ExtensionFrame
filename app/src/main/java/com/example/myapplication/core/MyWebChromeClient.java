@@ -1,7 +1,6 @@
 package com.example.myapplication.core;
 
-import android.app.Notification;
-import android.util.Log;
+
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
