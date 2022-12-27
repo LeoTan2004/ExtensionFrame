@@ -2,11 +2,16 @@ package com.example.myapplication.core;
 
 
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.myapplication.core.Extension.Extension;
+import com.example.myapplication.core.Extension.JsExtension;
+import com.example.myapplication.core.FileMGR.FileMGRStore;
+
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -18,7 +23,6 @@ public class Boot {
     private final String homePage = "https://www.baidu.com";
     private String setting = "https://www.bilibili.com/";
     //=======================================
-    //TODO 文件管理部分，可以考虑向上抽象
     private FileMGRStore fileMGRStore;
 
     public FileMGRStore getFileMGRStore() {
@@ -26,7 +30,8 @@ public class Boot {
     }
 
     //=========================================
-    private ArrayList<JsExtension> jsExtensions = new ArrayList<>();
+//    private ArrayList<JsExtension> jsExtensions = new ArrayList<>();
+    private HashMap<String, Extension> extensionStore = new HashMap<>();
     private WebView webView = null;
 
 
@@ -36,11 +41,18 @@ public class Boot {
     public  void goHome(){
         this.webView.loadUrl(this.homePage);
     }
-    public  void setting(){
+    public  void setting() {
 //        this.webView.loadUrl(setting);
 //        TODO 暂时用来测试功能
-//        fileMGRStore.getPriFileMGR().getFile("main.js");
-
+        File file = null;
+        try {
+            file = fileMGRStore.getPriFileMGR().getFile("main.js");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String s = file.getAbsolutePath();
+        Toast.makeText(this.webView.getContext(), s, Toast.LENGTH_SHORT).show();
+        this.invokeExtension("sss:sss1");
     }
 
     public static Boot getBoot() {
@@ -56,19 +68,48 @@ public class Boot {
     }
     //页面被加载完后调用，传来的url位当前的url
     public void refresh(String url){
-        //TODO do something after loadUrl
+        //do something after loadUrl
         startExtension(url);//start the extension
     }
 
     public int startExtension(String url){
         int counter = 0;
-        for (JsExtension js:jsExtensions) {
-            if (js.check(url)){
+        for (Extension extension:this.extensionStore.values()) {
+            if (extension.check(url)){
                 counter++;
-                js.startup(webView);
+                extension.startup(webView);
               }
         }
         return counter;
+    }
+
+    /**
+     *
+     * @param id extension的id
+     * @param o extension执行的参数，由双方自行约定
+     * @return 返回执行的结果，也是由上方自行约定
+     */
+    public Object invokeExtension(String id,Object o){
+        if (this.extensionStore.get(id) != null) {
+            return this.extensionStore.get(id).invoke(o);
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     *
+     * @param url 包含id的隐式调用
+     * @return
+     */
+    public Object invokeExtension(@NonNull String url){
+        String id = url.split(":")[0];
+        url = url.replace(id+":","");
+        if (this.extensionStore.get(id) != null) {
+            return this.extensionStore.get(id).invoke(url);
+        }else{
+            return null;
+        }
     }
 
     public WebView getWebView() throws Exception {
@@ -98,11 +139,9 @@ public class Boot {
         try {
             JsExtension instance = JsExtension.getInstance(path);
             if (instance != null) {
-                jsExtensions.add(instance);
+                this.extensionStore.put(instance.getId(),instance);
                 return true;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             throw e;
         }

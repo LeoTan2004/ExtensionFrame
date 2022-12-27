@@ -8,21 +8,20 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.FileInputStream;
+import com.example.myapplication.core.FileMGR.FileMGR;
 
 
 public class MyWebViewClient extends WebViewClient {
-
-    private String localhost;
     public void setLocalhost(String localhost) {
         Log.d("HHH16", "setLocalhost: "+localhost);
-        this.localhost = localhost;
+        Settings.setSettings("localhost",localhost);
     }
 
 
     @Nullable
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, @NonNull String url) {//URL拦截
+        String localhost = (String) Settings.getSettings("localhost");
         if (url.startsWith(localhost)){
             url = url.substring(url.indexOf(localhost)+ localhost.length(), url.length());
             WebResourceResponse webResourceResponse = convertLocalResource(url);
@@ -39,11 +38,7 @@ public class MyWebViewClient extends WebViewClient {
             fileMGR = Boot.getBoot().getFileMGRStore().getPriFileMGR();
         }
         try{
-            WebResourceResponse webResourceResponse =
-                    new WebResourceResponse(
-                            "application/javascript","UTF-8",
-                            new FileInputStream(Boot.getBoot().getFileMGRStore().
-                                    getPriFileMGR().getFile(url)));
+            WebResourceResponse webResourceResponse = (WebResourceResponse) Boot.getBoot().invokeExtension(url);
             return webResourceResponse;
             //TODO 还没有建立相关的目录，也就是asset目录
         }catch (Exception s) {

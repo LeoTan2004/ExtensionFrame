@@ -1,4 +1,4 @@
-package com.example.myapplication.core;
+package com.example.myapplication.core.FileMGR;
 
 import android.content.Context;
 
@@ -12,7 +12,7 @@ public class PriFileMGR extends FileMGR{
     private Context context;
     @Override
     public String convertPath(String path) {
-        return context.getExternalFilesDir(path).getPath();
+        return context.getFilesDir().getPath()+"/"+path;
     }
 
     public PriFileMGR(Context context){

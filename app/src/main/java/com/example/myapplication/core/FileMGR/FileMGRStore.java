@@ -1,4 +1,4 @@
-package com.example.myapplication.core;
+package com.example.myapplication.core.FileMGR;
 
 import android.content.Context;
 

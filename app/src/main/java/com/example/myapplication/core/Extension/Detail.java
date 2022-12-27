@@ -1,4 +1,4 @@
-package com.example.myapplication.core;
+package com.example.myapplication.core.Extension;
 
 import android.util.JsonReader;
 import android.util.JsonToken;

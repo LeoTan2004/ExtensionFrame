@@ -1,4 +1,4 @@
-package com.example.myapplication.core;
+package com.example.myapplication.core.FileMGR;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,8 +16,16 @@ public abstract class FileMGR {
      * @param path 文件名，也可以是路径
      * @return 返回文件句柄
      */
-    public File getFile(String path){
-        return new File(path);
+    public File getFile(String path) throws IOException {
+
+        path = convertPath(path);
+        File file  =  new File(path);
+        if (!file.exists()) {
+            if (!file.createNewFile()){
+                throw new IOException();
+            }
+        }
+        return file;
     }
 
     /**

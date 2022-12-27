@@ -1,5 +1,6 @@
-package com.example.myapplication.core;
+package com.example.myapplication.core.Extension;
 
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
@@ -7,8 +8,8 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -33,7 +34,13 @@ import java.util.regex.Pattern;
  *                   |
  *                   |_________xxx.js
  */
-public class JsExtension {
+public class JsExtension implements Extension{
+    private String id;
+
+    public String getId() {
+        return id;
+    }
+
     static HashMap<String,String> s = new HashMap<>(){{
         put("js","js");
         put("descript","readme.json");
@@ -44,16 +51,16 @@ public class JsExtension {
         }
     }};
     private String path;
-    private ArrayList<Javascript> javascripts = new ArrayList<>();
+    private HashMap<String,Javascript> javascriptHashMap = new HashMap<>();
     private String name;
     private Detail detail;
-    private final int id = this.hashCode();
 
     private JsExtension(String path, String name) {
         this.path = path;
         this.name = name;
     }
 
+    @Nullable
     public static JsExtension getInstance(String path) throws Exception {
         File file = new File(path);
         if (path == null) {
@@ -61,7 +68,6 @@ public class JsExtension {
         }
         if (isJsExtension(path)) return null;
         //检测已经通过，可以开始创建对象
-        //todo create an Object for the JsExtension
         //Js part1
         JsExtension jsExtension = new JsExtension(path,file.getName());
         File []JsDir = file.listFiles(new FileFilter() {
@@ -82,6 +88,7 @@ public class JsExtension {
         jsExtension.directory.replace("descript",descript[0]);
         //相关的信息建立
         jsExtension.detail = new Detail(jsExtension.directory.get("descript"));
+        jsExtension.id = String.valueOf(jsExtension.hashCode());
         return jsExtension;
     }
 
@@ -95,9 +102,15 @@ public class JsExtension {
         });
         for (File j : js) {
             counter++;
-            this.javascripts.add(new Javascript(j));
+            this.addJs(new Javascript(j));
         }
         return counter;
+    }
+
+    private void addJs(Javascript javascript){
+        if (!this.javascriptHashMap.containsValue(javascript)){
+            this.javascriptHashMap.put(javascript.getId(),javascript);
+        }
     }
 
     private static boolean isJsExtension(String path) {
@@ -130,7 +143,7 @@ public class JsExtension {
         //注入js,要初始化注射器，注射器会在WebView中生成一个叫__inject的函数，传入src，自动生成
         Javascript mainJs = null;
         initInjector(webView);
-        for (Javascript javascript : this.javascripts) {
+        for (Javascript javascript : this.javascriptHashMap.values()) {
             if (javascript.getFile().getName().equals("main.js")){
                 mainJs = javascript;
                 continue;
@@ -147,14 +160,13 @@ public class JsExtension {
      * @param webView
      * @param js js对象
      */
-    public static void injector(@NonNull WebView webView, @NonNull Javascript js){
-        String src = js.getPath();
-        //todo 写成内置函数，复用性高，防止占用太多变量
+    public void injector(@NonNull WebView webView, @NonNull Javascript js){
+        String src = "JAVASCRIPT:"+this.id+js.getId();
         String injection = "__inject(\""+src+"\");";
         webView.loadUrl("javascript: "+injection);
     }
 
-    private void initInjector(WebView webView){
+    private static void initInjector(@NonNull WebView webView){
 
         String injection = "function __inject(string src){"+
                 "\tvar header = document.getElementsByTagName(\"body\")[0];\n" +
@@ -176,6 +188,24 @@ public class JsExtension {
             }
         }
         return false;
+    }
+
+    public Object invoke(Object o) {
+        //todo 做本地js的文件返回，如果没有就返回null
+        //每一个extension一个Js列表，用hashmap方式查询返回
+        //外部也采用hashmap查询，
+        String url = (String) o ;
+        Javascript js;
+        if ((js = this.javascriptHashMap.get(url)) == null) {
+            return null;
+        }else{
+            try {
+                return new WebResourceResponse("application/javascript","UTF-8",new FileInputStream(js.getFile()));
+            } catch (FileNotFoundException e) {
+                return null;
+            }
+        }
+
     }
 }
 
