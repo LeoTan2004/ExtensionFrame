@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 
-class Javascript{
+public class Javascript{
     private File file;
     private String id;
 

@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.myapplication.core.Extension.Extension;
+import com.example.myapplication.core.Extension.Javascript;
 import com.example.myapplication.core.Extension.JsExtension;
 import com.example.myapplication.core.FileMGR.FileMGRStore;
 
@@ -52,7 +53,13 @@ public class Boot {
         }
         String s = file.getAbsolutePath();
         Toast.makeText(this.webView.getContext(), s, Toast.LENGTH_SHORT).show();
-        this.invokeExtension("sss:sss1");
+        try {
+            this.addExtension("/data/user/0/com.example.myapplication/files");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static Boot getBoot() {

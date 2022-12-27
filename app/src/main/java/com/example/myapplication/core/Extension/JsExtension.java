@@ -45,7 +45,7 @@ public class JsExtension implements Extension{
         put("js","js");
         put("descript","readme.json");
     }};
-    private final HashMap<String ,File> directory = new HashMap<>(){{
+    private final static HashMap<String ,File> directory = new HashMap<>(){{
         for (String s1 : s.keySet()) {
             put(s1,null);
         }
@@ -63,10 +63,10 @@ public class JsExtension implements Extension{
     @Nullable
     public static JsExtension getInstance(String path) throws Exception {
         File file = new File(path);
-        if (path == null) {
+        if (!file.exists()) {
             return null;
         }
-        if (isJsExtension(path)) return null;
+        if (!isJsExtension(path)) return null;
         //检测已经通过，可以开始创建对象
         //Js part1
         JsExtension jsExtension = new JsExtension(path,file.getName());
@@ -127,11 +127,14 @@ public class JsExtension implements Extension{
             }
 
         });
+        //todo 检测有问题，获取到的文件数量3，也就是里面的筛选器煤气作用\
+
+
         //检测基本的目录结构是否完整
         if (files.length<s.size()){
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**

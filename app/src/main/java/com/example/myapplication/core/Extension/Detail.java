@@ -33,7 +33,7 @@ public class Detail {
 
         JsonReader jsonReader = new JsonReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
         init(jsonReader);
-
+        jsonReader.close();
 
     }
 
