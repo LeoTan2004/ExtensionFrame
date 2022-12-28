@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 
 /**
  * JsExtension的基本目录结构
- * name-|_________readme.json
+ * name-|_________readme.xml
  *      |
  *      |_________js-|_________main.js
  *                   |
@@ -43,7 +43,7 @@ public class JsExtension implements Extension{
 
     static HashMap<String,String> s = new HashMap<>(){{
         put("js","js");
-        put("descript","readme.json");
+        put("descript","readme.xml");
     }};
     private final static HashMap<String ,File> directory = new HashMap<>(){{
         for (String s1 : s.keySet()) {

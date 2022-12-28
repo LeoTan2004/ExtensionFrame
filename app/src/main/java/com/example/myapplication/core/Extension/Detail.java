@@ -1,15 +1,21 @@
 package com.example.myapplication.core.Extension;
 
 import android.util.JsonReader;
-import android.util.JsonToken;
 
 import androidx.annotation.NonNull;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * 描述性对象，描述扩展的作用域等
@@ -30,41 +36,30 @@ public class Detail {
     private ArrayList<String> pattern = new ArrayList<>();//匹配时使用正则表达式
 
     public Detail(@NonNull File file) throws IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document document = builder.parse(file);
+            NodeList name = document.getElementsByTagName("name");
+            this.name = name.item(0).getFirstChild().getNodeValue();
+            NodeList pattern = document.getElementsByTagName("pattern");
+            readPattern(pattern);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            //此时大多数情况下为空
+            e.printStackTrace();
+        }
 
-        JsonReader jsonReader = new JsonReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
-        init(jsonReader);
-        jsonReader.close();
 
     }
 
-    private int init(JsonReader jsonReader) throws IOException {
+    private void readPattern(@NonNull NodeList detail) {
+        for (int i = 0; i < detail.getLength(); i++) {
+            Node item = detail.item(i).getFirstChild();
+            this.pattern.add(item.getNodeValue());
 
-        jsonReader.beginArray();
-        this.pattern.clear();
-        while (jsonReader.hasNext()){
-            jsonReader.beginObject();//初始化
-            while (jsonReader.hasNext()){
-                if (jsonReader.nextName().equals("name")){
-                    this.name = jsonReader.nextString();
-                }
-                if (jsonReader.nextName().equals("allowance")){
-                    if (jsonReader.peek()!=JsonToken.NULL){
-                        jsonReader.beginArray();
-                        while (jsonReader.hasNext()){
-                            String s = jsonReader.nextString();
-                            if (this.pattern.contains(s))
-                                this.pattern.add(s);
-                        }
-                        jsonReader.endArray();
-                    }
-                }
-            }
-            jsonReader.endObject();
         }
-
-        jsonReader.endArray();
-
-        return pattern.size();
     }
 
     public String getName() {
