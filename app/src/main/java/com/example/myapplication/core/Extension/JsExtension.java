@@ -6,6 +6,8 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.myapplication.core.Settings;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -127,8 +129,6 @@ public class JsExtension implements Extension{
             }
 
         });
-        //todo 检测有问题，获取到的文件数量3，也就是里面的筛选器煤气作用\
-
 
         //检测基本的目录结构是否完整
         if (files.length<s.size()){
@@ -164,19 +164,20 @@ public class JsExtension implements Extension{
      * @param js js对象
      */
     public void injector(@NonNull WebView webView, @NonNull Javascript js){
-        String src = "JAVASCRIPT:"+this.id+js.getId();
+        String src = (String) Settings.getSettings("localhost")+"JAVASCRIPT:"+this.id+":"+js.getId();
         String injection = "__inject(\""+src+"\");";
         webView.loadUrl("javascript: "+injection);
     }
 
     private static void initInjector(@NonNull WebView webView){
 
-        String injection = "function __inject(string src){"+
+        String injection = "function __inject(src){\n" +
                 "\tvar header = document.getElementsByTagName(\"body\")[0];\n" +
                 "\tvar injection = document.createElement(\"script\");\n" +
-                "\tinjection.src= src;\n" +
+                "\tinjection.src=src;\n" +
                 "\tinjection.className= \"injectedJs\";\n" +
-                "\theader.appendChild(injection);\n}";
+                "\theader.appendChild(injection);\n" +
+                "}";
         webView.loadUrl("javascript: " + injection);
     }
 
@@ -194,7 +195,6 @@ public class JsExtension implements Extension{
     }
 
     public Object invoke(Object o) {
-        //todo 做本地js的文件返回，如果没有就返回null
         //每一个extension一个Js列表，用hashmap方式查询返回
         //外部也采用hashmap查询，
         String url = (String) o ;

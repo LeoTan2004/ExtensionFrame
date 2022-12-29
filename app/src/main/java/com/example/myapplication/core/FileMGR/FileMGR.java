@@ -9,13 +9,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-public abstract class FileMGR {
+public abstract class FileMGR implements  IFILE {
 
-    public abstract String convertPath(String path);
     /**
      * @param path 文件名，也可以是路径
      * @return 返回文件句柄
      */
+    @Override
     public File getFile(String path) throws IOException {
 
         path = convertPath(path);
@@ -35,7 +35,8 @@ public abstract class FileMGR {
      * @param isAppend 是追加还是覆盖
      * @return 返回文件句柄
      */
-    public File saveFile(String s,String path,boolean isAppend) throws IOException {
+    @Override
+    public File saveFile(String s, String path, boolean isAppend) throws IOException {
         path = convertPath(path);
         StandardOpenOption standardOpenOption;
         if (isAppend){
@@ -52,20 +53,23 @@ public abstract class FileMGR {
         return file;
     }
 
-    public File copyFile(String resource,String target) throws IOException {
+    @Override
+    public File copyFile(String resource, String target) throws IOException {
         resource = convertPath(resource);
         target = convertPath(target);
         Files.copy(Paths.get(resource),Paths.get(target));
         return new File(target);
     }
 
-    public File moveFile(String resource,String target) throws IOException {
+    @Override
+    public File moveFile(String resource, String target) throws IOException {
         resource = convertPath(resource);
         target = convertPath(target);
         Files.move(Paths.get(resource),Paths.get(target));
         return new File(target);
     }
 
+    @Override
     public boolean deleteFile(String resource) throws IOException {
         resource = convertPath(resource);
         Files.delete(Paths.get(resource));

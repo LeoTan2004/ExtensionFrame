@@ -5,9 +5,9 @@ import android.content.Context;
 import java.util.HashMap;
 
 public class FileMGRStore {
-    private final HashMap<String,FileMGR> fileMGRs = new HashMap<>();
+    private final HashMap<String,IFILE> fileMGRs = new HashMap<>();
 
-    public FileMGR getPriFileMGR() {
+    public IFILE getPriFileMGR() {
         return fileMGRs.get("Private");
     }
 

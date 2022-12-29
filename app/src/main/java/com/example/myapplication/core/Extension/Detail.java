@@ -21,16 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
  * 描述性对象，描述扩展的作用域等
  *
  */
-/*
-实例json格式
-[
-    {
-        "name": "hello",
-        "allowance": ["nihao","adfad"]
-    }
-]
-可以有多个对象，但是名字只包含第一个对象的
- */
 public class Detail {
     private String name;
     private ArrayList<String> pattern = new ArrayList<>();//匹配时使用正则表达式
@@ -50,15 +40,12 @@ public class Detail {
             //此时大多数情况下为空
             e.printStackTrace();
         }
-
-
     }
 
     private void readPattern(@NonNull NodeList detail) {
         for (int i = 0; i < detail.getLength(); i++) {
             Node item = detail.item(i).getFirstChild();
             this.pattern.add(item.getNodeValue());
-
         }
     }
 

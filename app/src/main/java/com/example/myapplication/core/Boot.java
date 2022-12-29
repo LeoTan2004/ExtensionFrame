@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import com.example.myapplication.core.Extension.Extension;
 import com.example.myapplication.core.Extension.Javascript;
 import com.example.myapplication.core.Extension.JsExtension;
+import com.example.myapplication.core.Extension.JsInterface;
 import com.example.myapplication.core.FileMGR.FileMGRStore;
 
 import java.io.File;
@@ -45,21 +46,16 @@ public class Boot {
     public  void setting() {
 //        this.webView.loadUrl(setting);
 //        TODO 暂时用来测试功能
-        File file = null;
-        try {
-            file = fileMGRStore.getPriFileMGR().getFile("main.js");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        String s = file.getAbsolutePath();
-        Toast.makeText(this.webView.getContext(), s, Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    private void test() {
         try {
             this.addExtension("/data/user/0/com.example.myapplication/files");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public static Boot getBoot() {
@@ -82,7 +78,8 @@ public class Boot {
     public int startExtension(String url){
         int counter = 0;
         for (Extension extension:this.extensionStore.values()) {
-            if (extension.check(url)){
+            if (true){
+                //todo 测试中，condition需要修改
                 counter++;
                 extension.startup(webView);
               }
@@ -110,7 +107,13 @@ public class Boot {
      * @return
      */
     public Object invokeExtension(@NonNull String url){
-        String id = url.split(":")[0];
+        String id;
+        if (url.startsWith("JAVASCRIPT")){
+
+            url = url.replace("JAVASCRIPT:","");
+        }
+        id = url.split(":")[0];
+
         url = url.replace(id+":","");
         if (this.extensionStore.get(id) != null) {
             return this.extensionStore.get(id).invoke(url);
@@ -130,6 +133,12 @@ public class Boot {
         this.webView = view;
         boot = this;
         this.fileMGRStore = new FileMGRStore(view.getContext());
+        try {
+            this.getWebView().addJavascriptInterface(new JsInterface(),"android");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        webView.loadUrl("javascript: android.test();");
     }
 
     public static void startup(WebView view){
@@ -139,6 +148,8 @@ public class Boot {
         if (boot.webView==null){
             boot.webView = view;
         }
+        boot.test();
+        //todo delete
 
     }
 
@@ -155,7 +166,5 @@ public class Boot {
         return false;
 
     }
-
-
 
 }
