@@ -20,31 +20,3 @@ public class PriFileMGR extends FileMGR{
     }
 }
 
-/**
- * 本地公共资源获取方法
- * 整个系统资源都可以获取
- */
-class PubFileMGR extends FileMGR{
-
-    @Override
-    public String convertPath(String path) {
-        return path;
-    }
-}
-
-/**
- * 自定义映射文件管理
- * 通过初始化是对文件进行映射，可以实现对文件的本地化获取
- */
-class CustomFileMGR extends PriFileMGR{
-    private String target;
-    public CustomFileMGR(Context context,String target) {
-        super(context);
-        this.target = target;
-    }
-
-    @Override
-    public String convertPath(String path) {
-         return super.convertPath(this.target+path);
-    }
-}

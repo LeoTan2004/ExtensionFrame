@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -68,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
             });
         }
         webView.loadUrl("https://cs03-xtu.rth1.one/");
-        Boot.startup(webView);
+        Boot.startup(this,webView);
 
     }
+
 }

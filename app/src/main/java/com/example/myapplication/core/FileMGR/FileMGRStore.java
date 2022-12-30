@@ -11,7 +11,7 @@ public class FileMGRStore {
         return fileMGRs.get("Private");
     }
 
-    public FileMGR getPubFileMGR() {
+    public IFILE getPubFileMGR() {
         return fileMGRs.get("Public");
     }
 
@@ -19,11 +19,11 @@ public class FileMGRStore {
         fileMGRs.put("Public",new PubFileMGR());
         fileMGRs.put("Private",new PriFileMGR(context));
     }
-    public FileMGR customizeFileMGR(String name, Context context,String target){
-        return fileMGRs.put(name,new CustomFileMGR(context, target));
+    public IFILE customizeFileMGR(String name, String target){
+        return  fileMGRs.put(name,new CustomFileMGR(target));
     }
 
-    public FileMGR getFileMGR(String name) {
+    public IFILE getFileMGR(String name) {
         return fileMGRs.get(name);
     }
 }

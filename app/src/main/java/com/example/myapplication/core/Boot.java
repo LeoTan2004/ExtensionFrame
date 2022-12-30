@@ -6,6 +6,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.myapplication.MainActivity;
+import com.example.myapplication.core.DataStore.DataStore;
 import com.example.myapplication.core.Extension.Extension;
 import com.example.myapplication.core.Extension.Javascript;
 import com.example.myapplication.core.Extension.JsExtension;
@@ -18,10 +20,23 @@ import java.util.HashMap;
 
 
 public class Boot {
+    //数据存储
+    private DataStore dataStore = new DataStore("__Basic__");
 
-    //getter&setter hasn't been built
+    public DataStore getDataStore() {
+        return dataStore;
+    }
+    //====================================
+
+    private MainActivity activity;
+
+    public MainActivity getActivity() {
+        return activity;
+    }
+
     private static Boot boot = null;
-//    private String localhost;
+
+    //webPageSetting
     private final String homePage = "https://www.baidu.com";
     private String setting = "https://www.bilibili.com/";
     //=======================================
@@ -32,7 +47,6 @@ public class Boot {
     }
 
     //=========================================
-//    private ArrayList<JsExtension> jsExtensions = new ArrayList<>();
     private HashMap<String, Extension> extensionStore = new HashMap<>();
     private WebView webView = null;
 
@@ -44,9 +58,9 @@ public class Boot {
         this.webView.loadUrl(this.homePage);
     }
     public  void setting() {
-//        this.webView.loadUrl(setting);
+        this.webView.loadUrl(setting);
 //        TODO 暂时用来测试功能
-
+//        startExtension(this.webView.getUrl());
 
     }
 
@@ -78,8 +92,7 @@ public class Boot {
     public int startExtension(String url){
         int counter = 0;
         for (Extension extension:this.extensionStore.values()) {
-            if (true){
-                //todo 测试中，condition需要修改
+            if (extension.check(url)){
                 counter++;
                 extension.startup(webView);
               }
@@ -129,7 +142,8 @@ public class Boot {
         return webView;
     }
 
-    public Boot(@NonNull WebView view) {
+    public Boot(MainActivity activity,@NonNull WebView view) {
+        this.activity = activity;
         this.webView = view;
         boot = this;
         this.fileMGRStore = new FileMGRStore(view.getContext());
@@ -141,9 +155,9 @@ public class Boot {
         webView.loadUrl("javascript: android.test();");
     }
 
-    public static void startup(WebView view){
+    public static void startup(MainActivity activity,WebView view){
         if (boot == null) {
-            boot = new Boot(view);
+            boot = new Boot(activity,view);
         }
         if (boot.webView==null){
             boot.webView = view;

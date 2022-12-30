@@ -40,9 +40,11 @@ public class MyWebViewClient extends WebViewClient {
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
         String url = request.getUrl().toString();
-        cnt++;
+//        cnt++;
         return shouldInterceptRequest(view, url);
     }
+
+
 
     static int cnt = 0;
 

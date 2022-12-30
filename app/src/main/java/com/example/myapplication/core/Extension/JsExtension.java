@@ -6,12 +6,16 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.myapplication.core.DataStore.DataStore;
+import com.example.myapplication.core.FileMGR.CustomFileMGR;
+import com.example.myapplication.core.FileMGR.IFILE;
 import com.example.myapplication.core.Settings;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -37,6 +41,9 @@ import java.util.regex.Pattern;
  *                   |_________xxx.js
  */
 public class JsExtension implements Extension{
+
+    public static DataStore store = new DataStore("JsExtension");
+
     private String id;
 
     public String getId() {
@@ -56,6 +63,7 @@ public class JsExtension implements Extension{
     private HashMap<String,Javascript> javascriptHashMap = new HashMap<>();
     private String name;
     private Detail detail;
+    private IFILE customFile;
 
     private JsExtension(String path, String name) {
         this.path = path;
@@ -90,6 +98,7 @@ public class JsExtension implements Extension{
         jsExtension.directory.replace("descript",descript[0]);
         //相关的信息建立
         jsExtension.detail = new Detail(jsExtension.directory.get("descript"));
+        jsExtension.customFile = new CustomFileMGR(path);
         jsExtension.id = String.valueOf(jsExtension.hashCode());
         return jsExtension;
     }
@@ -209,6 +218,17 @@ public class JsExtension implements Extension{
             }
         }
 
+    }
+
+    @Nullable
+    private WebResourceResponse getResourceResponse(String url) {
+        try {
+            File file = customFile.getFile(url);
+            return new WebResourceResponse("text/css", "UTF-8", new FileInputStream(file));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 
