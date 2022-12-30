@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--basic setting-->
+    <string name="localhost">https://tjc/</string>
+    <!--    JsExtension setting-->
+    <string-array name="ExtensionPath">
+        <item>/data/user/0/com.example.myapplication/files</item>
+    </string-array>
+
+    <!--    Page of basic app-->
+    <string name="startPage">https://cs03-xtu.rth1.one/</string>
+    <string name="settingPage">https://www.bilibili.com/</string>
+    <string name="homePage">https://www.baidu.com</string>
+</resources>

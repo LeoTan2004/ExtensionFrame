@@ -43,7 +43,14 @@ public class JsInterface {
     public float getFloat(String key){
         return JsExtension.store.getSharedPreferences().getFloat(key,0);
     }
+
+
 //    数据存储===============
+
+    @JavascriptInterface
+    public void remove(String key){
+        JsExtension.store.getEditor().remove(key);
+    }
 
     @JavascriptInterface
     public void putInt(String key,int value){

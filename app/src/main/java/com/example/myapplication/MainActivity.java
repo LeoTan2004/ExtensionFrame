@@ -29,18 +29,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         WebView webView = (WebView) findViewById(R.id.webView);
-        {
-            WebSettings settings= webView.getSettings();
-            settings.setJavaScriptEnabled(true);
-            settings.setSupportZoom(false);
-            settings.setAllowFileAccess(true);
-            MyWebViewClient myWebViewClient = new MyWebViewClient();
-            String s = this.getString(R.string.localhost);
-            myWebViewClient.setLocalhost(s);
-            webView.setWebViewClient(myWebViewClient);
-            webView.setWebChromeClient(new MyWebChromeClient());
-            settings.setDomStorageEnabled(true);
-        }
+        webViewInit(webView);
+        buttonInit();
+        webView.loadUrl(getResources().getString(R.string.startPage));
+        Boot.startup(this,webView);
+
+    }
+
+    private void webViewInit(WebView webView) {
+        WebSettings settings= webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setSupportZoom(false);
+        settings.setAllowFileAccess(true);
+        MyWebViewClient myWebViewClient = new MyWebViewClient();
+        String s = this.getResources().getString(R.string.localhost);
+        myWebViewClient.setLocalhost(s);
+        webView.setWebViewClient(myWebViewClient);
+        webView.setWebChromeClient(new MyWebChromeClient());
+        settings.setDomStorageEnabled(true);
+    }
+
+    private void buttonInit() {
         Button goBack = findViewById(R.id.goBack);
         {
             goBack.setOnClickListener(new View.OnClickListener() {
@@ -68,9 +77,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-        webView.loadUrl("https://cs03-xtu.rth1.one/");
-        Boot.startup(this,webView);
-
     }
 
 }

@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.example.myapplication.MainActivity;
+import com.example.myapplication.R;
 import com.example.myapplication.core.DataStore.DataStore;
 import com.example.myapplication.core.Extension.Extension;
 import com.example.myapplication.core.Extension.Javascript;
@@ -21,7 +22,7 @@ import java.util.HashMap;
 
 public class Boot {
     //数据存储
-    private DataStore dataStore = new DataStore("__Basic__");
+    private DataStore dataStore;
 
     public DataStore getDataStore() {
         return dataStore;
@@ -32,13 +33,24 @@ public class Boot {
 
     public MainActivity getActivity() {
         return activity;
+
     }
 
     private static Boot boot = null;
 
     //webPageSetting
     private final String homePage = "https://www.baidu.com";
-    private String setting = "https://www.bilibili.com/";
+//    private String setting = "https://www.bilibili.com/";
+
+
+    public String getHomePage() {
+        return activity.getResources().getString(R.string.homePage);
+    }
+
+    public String getSetting() {
+        return activity.getResources().getString(R.string.settingPage);
+    }
+
     //=======================================
     private FileMGRStore fileMGRStore;
 
@@ -55,18 +67,20 @@ public class Boot {
         this.webView.goBack();
     }
     public  void goHome(){
-        this.webView.loadUrl(this.homePage);
+        this.webView.loadUrl(getHomePage());
     }
     public  void setting() {
-        this.webView.loadUrl(setting);
+        this.webView.loadUrl(getSetting());
 //        TODO 暂时用来测试功能
 //        startExtension(this.webView.getUrl());
-
+        //todo debuging
+        webView.loadUrl("javascript: android.test();");
     }
 
     private void test() {
+        String[] stringArray = activity.getResources().getStringArray(R.array.ExtensionPath);
         try {
-            this.addExtension("/data/user/0/com.example.myapplication/files");
+            this.addExtension(stringArray[0]);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -152,7 +166,8 @@ public class Boot {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        webView.loadUrl("javascript: android.test();");
+        this.dataStore = new DataStore("__Basic__");
+
     }
 
     public static void startup(MainActivity activity,WebView view){
