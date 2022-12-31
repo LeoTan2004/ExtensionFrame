@@ -16,6 +16,7 @@ import com.example.myapplication.core.Boot;
 import com.example.myapplication.core.MyWebChromeClient;
 import com.example.myapplication.core.MyWebViewClient;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 public class MainActivity extends AppCompatActivity {
@@ -73,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
             setting.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Boot.getBoot().setting();
+
+                        Boot.getBoot().setting();
                 }
             });
         }

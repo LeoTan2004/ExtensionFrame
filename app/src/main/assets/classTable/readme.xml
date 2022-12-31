@@ -1,0 +1,5 @@
+<detail>
+<name>Test</name>
+<pattern>http://jwxt.xtu.edu.cn/jsxsd/xskb/xskb_list.do.*</pattern>
+<pattern>https://www.bilibili.com/</pattern>
+</detail>

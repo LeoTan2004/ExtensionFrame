@@ -1,6 +1,7 @@
 package com.example.myapplication.core;
 
 
+import android.content.Context;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -13,10 +14,15 @@ import com.example.myapplication.core.Extension.Extension;
 import com.example.myapplication.core.Extension.Javascript;
 import com.example.myapplication.core.Extension.JsExtension;
 import com.example.myapplication.core.Extension.JsInterface;
+import com.example.myapplication.core.FileMGR.AssertMGR;
 import com.example.myapplication.core.FileMGR.FileMGRStore;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.HashMap;
 
 
@@ -38,11 +44,6 @@ public class Boot {
 
     private static Boot boot = null;
 
-    //webPageSetting
-    private final String homePage = "https://www.baidu.com";
-//    private String setting = "https://www.bilibili.com/";
-
-
     public String getHomePage() {
         return activity.getResources().getString(R.string.homePage);
     }
@@ -63,6 +64,10 @@ public class Boot {
     private WebView webView = null;
 
 
+
+
+
+
     public  void goBack(){
         this.webView.goBack();
     }
@@ -75,6 +80,12 @@ public class Boot {
 //        startExtension(this.webView.getUrl());
         //todo debuging
         webView.loadUrl("javascript: android.test();");
+        try {
+            AssertMGR.copyFile("classTable",
+                    this.fileMGRStore.getPriFileMGR().getFile("/").getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void test() {
