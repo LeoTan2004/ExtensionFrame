@@ -99,7 +99,7 @@ public class JsExtension implements Extension{
         //相关的信息建立
         jsExtension.detail = new Detail(jsExtension.directory.get("descript"));
         jsExtension.customFile = new CustomFileMGR(path);
-        jsExtension.id = String.valueOf(jsExtension.hashCode());
+        jsExtension.id = new File(path).getName();
         return jsExtension;
     }
 

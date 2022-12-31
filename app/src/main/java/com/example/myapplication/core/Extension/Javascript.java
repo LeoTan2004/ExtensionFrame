@@ -15,7 +15,7 @@ public class Javascript{
     public Javascript(@NonNull File file) throws Exception {
         this.file = file;
         //这里最后思前想后，还是决定交个Extension来处理，而自身占用一个id做标记，在html文档里面也是使用id做标记
-        id = String.valueOf(this.hashCode());
+        id = String.valueOf(this.file.getName());
     }
 
     public File getFile() {
