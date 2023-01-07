@@ -1,5 +1,7 @@
 package com.example.myapplication.core;
 
+import android.app.ActionBar;
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -9,6 +11,8 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.myapplication.R;
+
 public class MyWebViewClient extends WebViewClient {
 
     @Override
@@ -17,16 +21,10 @@ public class MyWebViewClient extends WebViewClient {
         Boot.getBoot().startExtension(url);
     }
 
-    public void setLocalhost(String localhost) {
-        Log.d("HHH16", "setLocalhost: "+localhost);
-        Settings.setSettings("localhost",localhost);
-    }
-
-
     @Nullable
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, @NonNull String url) {//URL拦截
-        String localhost = (String) Settings.getSettings("localhost");
+        String localhost = Boot.getBoot().getActivity().getString(R.string.localhost);
         if (url.startsWith(localhost)){
             url = url.substring(url.indexOf(localhost)+ localhost.length());
             WebResourceResponse webResourceResponse = convertLocalResource(url);
@@ -40,7 +38,6 @@ public class MyWebViewClient extends WebViewClient {
     @Override
     public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
         String url = request.getUrl().toString();
-//        cnt++;
         return shouldInterceptRequest(view, url);
     }
 
@@ -58,4 +55,9 @@ public class MyWebViewClient extends WebViewClient {
         }
         return null;
     }
+
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);//返回true代表在当前webview中打开，返回false表示打开浏览器
+            return super.shouldOverrideUrlLoading(view,url);       }
+
 }

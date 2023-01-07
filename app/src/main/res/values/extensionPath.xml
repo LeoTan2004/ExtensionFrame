@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    JsExtension setting-->
+    <string-array name="ExtensionPath">
+        <item>/data/user/0/com.example.myapplication/files/classTable</item>
+    </string-array>
+</resources>

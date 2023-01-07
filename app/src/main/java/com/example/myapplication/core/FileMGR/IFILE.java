@@ -6,7 +6,9 @@ import java.io.IOException;
 public interface IFILE {
     String convertPath(String path);
 
-    File getFile(String path) throws IOException;
+    File getFile_s(String path,boolean isDir);
+
+    File getFile(String path);
 
     File saveFile(String s, String path, boolean isAppend) throws IOException;
 

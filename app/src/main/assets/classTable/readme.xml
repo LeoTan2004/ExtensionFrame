@@ -1,5 +1,21 @@
 <detail>
-<name>Test</name>
-<pattern>http://jwxt.xtu.edu.cn/jsxsd/xskb/xskb_list.do.*</pattern>
-<pattern>https://www.bilibili.com/</pattern>
+    <name>JsExtension</name>
+    <pattern>http://.*</pattern>
+    <pattern>htt.*</pattern>
+    <pattern>http://jwxt.xtu.edu.cn/jsxsd/xskb/xskb_list.do.*</pattern>
+    <pattern>https://m.bilibili.com/</pattern>
 </detail>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

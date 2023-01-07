@@ -6,6 +6,8 @@ import android.webkit.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.example.myapplication.R;
+import com.example.myapplication.core.Boot;
 import com.example.myapplication.core.DataStore.DataStore;
 import com.example.myapplication.core.FileMGR.CustomFileMGR;
 import com.example.myapplication.core.FileMGR.IFILE;
@@ -16,7 +18,10 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
@@ -28,7 +33,6 @@ import java.util.regex.Pattern;
  * 当然也可以不作为其实文件，比如你只是单独写一个供其他人调用的工具js，那么他是不需要运行的，
  * 而是等待其他人调用，就如同库函数一样。
  */
-
 
 /**
  * JsExtension的基本目录结构
@@ -42,12 +46,12 @@ import java.util.regex.Pattern;
  */
 public class JsExtension implements Extension{
 
-    public static DataStore store = new DataStore("JsExtension");
+    public static DataStore store = new DataStore(Boot.getBoot().getActivity(), "JsExtension");
 
     private String id;
 
     public String getId() {
-        return id;
+        return id.toLowerCase(Locale.ROOT);
     }
 
     static HashMap<String,String> s = new HashMap<>(){{
@@ -65,9 +69,7 @@ public class JsExtension implements Extension{
     private Detail detail;
     private IFILE customFile;
 
-    private JsExtension(String path, String name) {
-        this.path = path;
-        this.name = name;
+    private JsExtension() {
     }
 
     @Nullable
@@ -79,7 +81,7 @@ public class JsExtension implements Extension{
         if (!isJsExtension(path)) return null;
         //检测已经通过，可以开始创建对象
         //Js part1
-        JsExtension jsExtension = new JsExtension(path,file.getName());
+        JsExtension jsExtension = new JsExtension();
         File []JsDir = file.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
@@ -100,6 +102,9 @@ public class JsExtension implements Extension{
         jsExtension.detail = new Detail(jsExtension.directory.get("descript"));
         jsExtension.customFile = new CustomFileMGR(path);
         jsExtension.id = new File(path).getName();
+        if (jsExtension.detail.getName()!=null){
+            jsExtension.id = jsExtension.detail.getName();
+        }
         return jsExtension;
     }
 
@@ -173,7 +178,10 @@ public class JsExtension implements Extension{
      * @param js js对象
      */
     public void injector(@NonNull WebView webView, @NonNull Javascript js){
-        String src = (String) Settings.getSettings("localhost")+"JAVASCRIPT:"+this.id+":"+js.getId();
+
+        // TODO: 2023/1/2 在webchrome里面解决跳转表示问题，尽量实现统一化处理，保证数据安全
+        String src =  Boot.getBoot().getActivity().getString(R.string.localhost)
+                +this.id+":js"+File.separator+js.getId();
         String injection = "__inject(\""+src+"\");";
         webView.loadUrl("javascript: "+injection);
     }
@@ -204,29 +212,15 @@ public class JsExtension implements Extension{
     }
 
     public Object invoke(Object o) {
-        //每一个extension一个Js列表，用hashmap方式查询返回
-        //外部也采用hashmap查询，
         String url = (String) o ;
-        Javascript js;
-        if ((js = this.javascriptHashMap.get(url)) == null) {
-            return null;
-        }else{
+        File f = this.customFile.getFile(url);
+        if (f.exists()){
+            String fileNameMap = URLConnection.getFileNameMap().getContentTypeFor(f.getAbsolutePath());
             try {
-                return new WebResourceResponse("application/javascript","UTF-8",new FileInputStream(js.getFile()));
+                return new WebResourceResponse(fileNameMap,"UTF-8",new FileInputStream(f));
             } catch (FileNotFoundException e) {
-                return null;
+                e.printStackTrace();
             }
-        }
-
-    }
-
-    @Nullable
-    private WebResourceResponse getResourceResponse(String url) {
-        try {
-            File file = customFile.getFile(url);
-            return new WebResourceResponse("text/css", "UTF-8", new FileInputStream(file));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return null;
     }

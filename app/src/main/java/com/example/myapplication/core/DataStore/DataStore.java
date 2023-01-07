@@ -1,5 +1,6 @@
 package com.example.myapplication.core.DataStore;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -10,9 +11,9 @@ public class DataStore{
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
-    public DataStore(String name){
+    public DataStore(Activity activity, String name){
         this.name = name;
-        this.sharedPreferences = Boot.getBoot().getActivity().getSharedPreferences(name, Context.MODE_PRIVATE);
+        this.sharedPreferences = activity.getSharedPreferences(name, Context.MODE_PRIVATE);
         this.editor = sharedPreferences.edit();
     }
 

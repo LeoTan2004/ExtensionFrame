@@ -1,7 +1,6 @@
 package com.example.myapplication.core;
 
 
-import android.content.Context;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -11,62 +10,77 @@ import com.example.myapplication.MainActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.core.DataStore.DataStore;
 import com.example.myapplication.core.Extension.Extension;
-import com.example.myapplication.core.Extension.Javascript;
 import com.example.myapplication.core.Extension.JsExtension;
-import com.example.myapplication.core.Extension.JsInterface;
+import com.example.myapplication.core.JsInterface.JsDataInterface;
 import com.example.myapplication.core.FileMGR.AssertMGR;
 import com.example.myapplication.core.FileMGR.FileMGRStore;
+import com.example.myapplication.core.JsInterface.JsFileInterface;
+import com.example.myapplication.core.JsInterface.JsInterface;
+import com.example.myapplication.core.JsInterface.JsSettingInterface;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Locale;
 
 
 public class Boot {
-    //数据存储
     private DataStore dataStore;
+    private Settings settings;
+
+    public Settings getSettings() {
+        if (settings == null) {
+            settings = new Settings();
+            settings.bindDataStore(new DataStore(this.getActivity(),"__SETTINGS__"));
+        }
+        return settings;
+    }
 
     public DataStore getDataStore() {
+        if (dataStore == null) {
+            dataStore = new DataStore(this.getActivity(),"__BASIC__");
+        }
         return dataStore;
     }
-    //====================================
+//====================================
 
     private MainActivity activity;
 
     public MainActivity getActivity() {
         return activity;
-
     }
 
     private static Boot boot = null;
 
+//    使用优先级的方式，如果从setting中可以获取到则使用setting中的值，
+//    否则使用默认值，也就是在value中的值
     public String getHomePage() {
-        return activity.getResources().getString(R.string.homePage);
+        if (this.getSettings().getSettings("homePage")==null){
+            return activity.getResources().getString(R.string.homePage);
+        }
+        return (String) this.getSettings().getSettings("homePage");
     }
 
-    public String getSetting() {
-        return activity.getResources().getString(R.string.settingPage);
+    public String goSetting() {
+        if (this.getSettings().getSettings("settingPage")==null){
+            return activity.getResources().getString(R.string.settingPage);
+        }
+        return (String) this.getSettings().getSettings("settingPage");
     }
 
-    //=======================================
+//=======================================
     private FileMGRStore fileMGRStore;
 
     public FileMGRStore getFileMGRStore() {
+        if (fileMGRStore == null) {
+            fileMGRStore = new FileMGRStore(this.getActivity());
+        }
         return fileMGRStore;
     }
 
-    //=========================================
+//=========================================
     private HashMap<String, Extension> extensionStore = new HashMap<>();
     private WebView webView = null;
-
-
-
-
-
 
     public  void goBack(){
         this.webView.goBack();
@@ -75,20 +89,14 @@ public class Boot {
         this.webView.loadUrl(getHomePage());
     }
     public  void setting() {
-        this.webView.loadUrl(getSetting());
-//        TODO 暂时用来测试功能
-//        startExtension(this.webView.getUrl());
-        //todo debuging
-        webView.loadUrl("javascript: android.test();");
-        try {
-            AssertMGR.copyFile("classTable",
-                    this.fileMGRStore.getPriFileMGR().getFile("/").getAbsolutePath());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.webView.loadUrl(goSetting());
     }
 
-    private void test() {
+//===================初始化==============================
+
+    private void initExtension() {
+        //这个是指程序初始化是的应用，无需写到外部，当然，写到外部也行。这里据情况而定
+        // TODO: 2023/1/4 写到外面，有外部setting决定
         String[] stringArray = activity.getResources().getStringArray(R.array.ExtensionPath);
         try {
             this.addExtension(stringArray[0]);
@@ -104,14 +112,58 @@ public class Boot {
         return boot;
     }
 
-
     private Boot(){
         boot = this;
     }
-    //页面被加载完后调用，传来的url位当前的url
-    public void refresh(String url){
-        //do something after loadUrl
-        startExtension(url);//start the extension
+
+    public static void startup(MainActivity activity,WebView view){
+        if (boot == null) {
+            boot = new Boot(activity,view);
+        }
+        if (boot.webView==null){
+            boot.webView = view;
+        }
+        boot.initAssert();
+        boot.initExtension();
+    }
+
+    public Boot(MainActivity activity,@NonNull WebView view) {
+        this.activity = activity;
+        this.webView = view;
+        boot = this;
+        this.fileMGRStore = new FileMGRStore(view.getContext());
+        initJsInterface();
+        this.dataStore = new DataStore(this.getActivity(),"__BASIC__");
+    }
+
+    private void initJsInterface(){
+        this.addJsInterface(new JsDataInterface());
+        this.addJsInterface(new JsFileInterface());
+        this.addJsInterface(new JsSettingInterface());
+    }
+
+    private void initAssert(){
+        try {
+            AssertMGR.copyFile("classTable",
+                    this.getFileMGRStore().getPriFileMGR().getFile("classTable").getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+//===================================================
+
+    /**
+     *
+     * @param jsInterface 接口对象
+     * @return 是否成功添加
+     */
+    public boolean addJsInterface(JsInterface jsInterface) {
+        try {
+            this.getWebView().addJavascriptInterface(jsInterface,jsInterface.getIdentity());
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 
     public int startExtension(String url){
@@ -132,6 +184,7 @@ public class Boot {
      * @return 返回执行的结果，也是由上方自行约定
      */
     public Object invokeExtension(String id,Object o){
+        id = id.toLowerCase(Locale.ROOT);
         if (this.extensionStore.get(id) != null) {
             return this.extensionStore.get(id).invoke(o);
         }else{
@@ -142,22 +195,13 @@ public class Boot {
     /**
      *
      * @param url 包含id的隐式调用
-     * @return
+     *            格式如：JsExtension.id:path
+     * @return 由上面的方法决定
      */
     public Object invokeExtension(@NonNull String url){
-        String id;
-        if (url.startsWith("JAVASCRIPT")){
-
-            url = url.replace("JAVASCRIPT:","");
-        }
-        id = url.split(":")[0];
-
+        String id = url.split(":")[0];
         url = url.replace(id+":","");
-        if (this.extensionStore.get(id) != null) {
-            return this.extensionStore.get(id).invoke(url);
-        }else{
-            return null;
-        }
+        return invokeExtension(id,url);
     }
 
     public WebView getWebView() throws Exception {
@@ -167,35 +211,9 @@ public class Boot {
         return webView;
     }
 
-    public Boot(MainActivity activity,@NonNull WebView view) {
-        this.activity = activity;
-        this.webView = view;
-        boot = this;
-        this.fileMGRStore = new FileMGRStore(view.getContext());
-        try {
-            this.getWebView().addJavascriptInterface(new JsInterface(),"android");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        this.dataStore = new DataStore("__Basic__");
-
-    }
-
-    public static void startup(MainActivity activity,WebView view){
-        if (boot == null) {
-            boot = new Boot(activity,view);
-        }
-        if (boot.webView==null){
-            boot.webView = view;
-        }
-        boot.test();
-        //todo delete
-
-    }
-
     public boolean addExtension(String path) throws Exception {
         try {
-            JsExtension instance = JsExtension.getInstance(path);
+            Extension instance = JsExtension.getInstance(path);
             if (instance != null) {
                 this.extensionStore.put(instance.getId(),instance);
                 return true;
@@ -207,4 +225,15 @@ public class Boot {
 
     }
 
+
+
+
+
+
+
+
+    // TODO: 2023/1/3 testFunction
+    public void test(){
+        Toast.makeText(activity, "Test", Toast.LENGTH_SHORT).show();
+    }
 }

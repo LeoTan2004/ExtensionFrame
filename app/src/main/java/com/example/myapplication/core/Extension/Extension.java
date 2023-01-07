@@ -6,4 +6,5 @@ public interface Extension {
     boolean check(String url);
     void startup(WebView webView);
     Object invoke(Object o);
+    String getId();
 }

@@ -2,6 +2,8 @@ package com.example.myapplication.core.FileMGR;
 
 import android.content.Context;
 
+import java.io.File;
+
 /**
  * 程序自身的存储空间
  * convertPath一般不建议直接调用，
@@ -12,7 +14,7 @@ public class PriFileMGR extends FileMGR{
     private Context context;
     @Override
     public String convertPath(String path) {
-        return context.getFilesDir().getPath()+"/"+path;
+        return context.getFilesDir().getPath()+ File.separator+path;
     }
 
     public PriFileMGR(Context context){

@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--basic setting-->
-    <string name="localhost">https://tjc/</string>
-    <!--    JsExtension setting-->
-    <string-array name="ExtensionPath">
-        <item>/data/user/0/com.example.myapplication/files</item>
-    </string-array>
+    <string name="localhost">localhost</string>
+
 
     <!--    Page of basic app-->
-    <string name="startPage">http://jwxt.xtu.edu.cn/jsxsd/xskb/xskb_list.do?Ves632DSdyV=NEW_XSD_PYGL</string>
+    <string name="startPage">http://jwxt.xtu.edu.cn/jsxsd/xskb/xskb_list.do</string>
     <string name="settingPage">https://www.bilibili.com/</string>
     <string name="homePage">https://www.baidu.com</string>
 </resources>

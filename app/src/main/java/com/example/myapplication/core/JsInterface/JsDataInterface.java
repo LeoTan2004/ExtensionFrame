@@ -1,30 +1,22 @@
-package com.example.myapplication.core.Extension;
+package com.example.myapplication.core.JsInterface;
 
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
 import com.example.myapplication.core.Boot;
-import com.example.myapplication.core.DataStore.DataStore;
+import com.example.myapplication.core.Extension.JsExtension;
 
-public class JsInterface {
-    @JavascriptInterface
-    public void test() throws Exception {
-        Toast.makeText(Boot.getBoot().getWebView().getContext(), "Js调用了test", Toast.LENGTH_SHORT).show();
+public class JsDataInterface implements JsInterface{
+    private static final String identity = "__DATA__";
+
+    @Override
+    public String getIdentity() {
+        return identity;
     }
 
     @JavascriptInterface
-    public void goHome(){
-        Boot.getBoot().goHome();
-    }
-
-    @JavascriptInterface
-    public void goBack(){
-        Boot.getBoot().goBack();
-    }
-
-    @JavascriptInterface
-    public void setting(){
-        Boot.getBoot().setting();
+    public void toast(String msg) {
+        Toast.makeText(Boot.getBoot().getActivity(), getIdentity().replace("_","")+":"+msg, Toast.LENGTH_SHORT).show();
     }
 
 //    数据读取===============

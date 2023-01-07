@@ -1,5 +1,11 @@
 package com.example.myapplication.core.FileMGR;
 
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+
+import com.example.myapplication.core.Boot;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -12,20 +18,35 @@ import java.nio.file.StandardOpenOption;
 public abstract class FileMGR implements  IFILE {
 
     /**
-     * @param path 文件名，也可以是路径
+     * @param path 文件名，也可以是路径,如果不存在，默认为其常见文件夹
      * @return 返回文件句柄
      */
     @Override
-    public File getFile(String path) throws IOException {
+    public File getFile(String path) {
 
         path = convertPath(path);
         File file  =  new File(path);
+        return file;
+    }
+
+    public File getFile_s(String path,boolean isDir) {
+        File file = this.getFile(path);
         if (!file.exists()) {
-            if (!file.createNewFile()){
-                throw new IOException();
+            if (isDir){
+                file.mkdirs();
+            }else{
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    Toast.makeText(Boot.getBoot().getActivity(), "权限不足", Toast.LENGTH_SHORT).show();
+                    return null;
+                }
             }
         }
-        return file;
+        if (file.exists()){
+            return file;
+        }
+        return null;
     }
 
     /**
@@ -52,6 +73,7 @@ public abstract class FileMGR implements  IFILE {
         }
         return file;
     }
+
 
     @Override
     public File copyFile(String resource, String target) throws IOException {
