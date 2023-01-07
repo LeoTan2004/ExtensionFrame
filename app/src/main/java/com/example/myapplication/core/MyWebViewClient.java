@@ -36,7 +36,7 @@ public class MyWebViewClient extends WebViewClient {
 
     @Nullable
     @Override
-    public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+    public WebResourceResponse shouldInterceptRequest(WebView view, @NonNull WebResourceRequest request) {
         String url = request.getUrl().toString();
         return shouldInterceptRequest(view, url);
     }

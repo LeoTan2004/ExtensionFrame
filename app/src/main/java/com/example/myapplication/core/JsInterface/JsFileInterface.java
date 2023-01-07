@@ -65,9 +65,9 @@ public class JsFileInterface implements JsInterface{
     }
 
     @JavascriptInterface
-    public boolean deleteFile(String target){
+    public boolean deleteFile(String resource){
         try {
-            Boot.getBoot().getFileMGRStore().getPubFileMGR().deleteFile(target);
+            Boot.getBoot().getFileMGRStore().getPubFileMGR().deleteFile(resource);
         } catch (IOException e) {
             return false;
         }
@@ -75,9 +75,9 @@ public class JsFileInterface implements JsInterface{
     }
 
     @JavascriptInterface
-    public boolean writeFile(String target,String data){
+    public boolean writeFile(String resource,String data){
         try {
-            Boot.getBoot().getFileMGRStore().getPubFileMGR().saveFile(data,target,false);
+            Boot.getBoot().getFileMGRStore().getPubFileMGR().saveFile(data,resource,false);
         } catch (IOException e) {
             return false;
         }

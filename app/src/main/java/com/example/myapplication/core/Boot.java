@@ -123,7 +123,7 @@ public class Boot {
         if (boot.webView==null){
             boot.webView = view;
         }
-        boot.initAssert();
+        boot.initAssert("classTable");
         boot.initExtension();
     }
 
@@ -142,10 +142,10 @@ public class Boot {
         this.addJsInterface(new JsSettingInterface());
     }
 
-    private void initAssert(){
+    private void initAssert(String path){
         try {
-            AssertMGR.copyFile("classTable",
-                    this.getFileMGRStore().getPriFileMGR().getFile("classTable").getAbsolutePath());
+            AssertMGR.copyFile(path,
+                    this.getFileMGRStore().getPriFileMGR().getFile(path).getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -199,8 +199,8 @@ public class Boot {
      * @return 由上面的方法决定
      */
     public Object invokeExtension(@NonNull String url){
-        String id = url.split(":")[0];
-        url = url.replace(id+":","");
+        String id = url.split("/")[0];
+        url = url.replace(id+"/","");
         return invokeExtension(id,url);
     }
 

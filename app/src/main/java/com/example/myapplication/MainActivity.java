@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
         WebView webView = (WebView) findViewById(R.id.webView);
         webViewInit(webView);
         buttonInit();
-        webView.loadUrl(getResources().getString(R.string.startPage));
         Boot.startup(this,webView);
+        webView.loadUrl(getResources().getString(R.string.startPage));
     }
 
     private void webViewInit(@NonNull WebView webView) {
@@ -60,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.supportMultipleWindows();
         webSettings.setAllowContentAccess(true);
-        webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-        webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
         webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
         webSettings.setLoadsImagesAutomatically(true);

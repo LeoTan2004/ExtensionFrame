@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--basic setting-->
-    <string name="localhost">localhost</string>
+    <string name="localhost">localhost:</string>
 
 
     <!--    Page of basic app-->
-    <string name="startPage">http://jwxt.xtu.edu.cn/jsxsd/xskb/xskb_list.do</string>
+    <string name="startPage">localhost:jsextension/html/StartPage.html</string>
     <string name="settingPage">https://www.bilibili.com/</string>
     <string name="homePage">https://www.baidu.com</string>
 </resources>

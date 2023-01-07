@@ -3,5 +3,6 @@
     <!--    JsExtension setting-->
     <string-array name="ExtensionPath">
         <item>/data/user/0/com.example.myapplication/files/classTable</item>
+
     </string-array>
 </resources>
